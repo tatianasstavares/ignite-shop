@@ -1,4 +1,20 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+   
+    images: {
+        domains: [
+          'files.stripe.com',
+        ],
+        imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+      },
+    
+   
+   
+    experimental: {
+    images: {
+        allowFutureImage: true
+     }
+   }
+}
 
 module.exports = nextConfig
