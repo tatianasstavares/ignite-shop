@@ -1,14 +1,9 @@
 import { HomeContainer, Product } from "@/styles/pages/home";
 import Image from "next/image";
-import shirt1 from '../src/assets/shirt1.png'
-import shirt2 from '../src/assets/shirt2.png'
-import shirt3 from '../src/assets/shirt3.png'
-import shirt4 from '../src/assets/shirt4.png'
 import {useKeenSlider} from 'keen-slider/react'
 import {stripe} from '../src/lib/stripe'
-
 import 'keen-slider/keen-slider.min.css'
-import { GetServerSideProps } from "next";
+import { GetServerSideProps, GetStaticProps } from "next";
 import Stripe from "stripe";
 
 interface HomeProps {
@@ -27,7 +22,6 @@ export default function Home({products}:HomeProps) {
       spacing: 48
     }
   })
-  console.log(products)
   return (
     <HomeContainer ref={sliderRef} className="keen-slider">
       {products.map(product => {
@@ -50,7 +44,7 @@ export default function Home({products}:HomeProps) {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   const response = await stripe.products.list({
     expand: ['data.default_price']
   })
@@ -62,15 +56,19 @@ export const getServerSideProps: GetServerSideProps = async () => {
       id: product.id,
       name: product.name,
       imageUrl: product.images,
-      price: price.unit_amount  / 100,
+      price: new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      }).format(price.unit_amount  / 100),
     }
   })
   
 
   return {
     props: {
-       products
-    }
+       products,
+    },
+    revalidate: 60 * 60 * 2
   }
   
 }
